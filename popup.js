@@ -16,9 +16,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Load saved dons ponctuels
-  const data = await chrome.storage.local.get(['donsPonctuels']);
+  const data = await chrome.storage.local.get(['donsPonctuels', 'donPonctuelFavori']);
   if (data.donsPonctuels) {
     document.getElementById('donsPonctuels').value = data.donsPonctuels;
+  }
+  if (data.donPonctuelFavori) {
+    document.getElementById('donPonctuelFavori').value = data.donPonctuelFavori;
   }
 
   // Listen for progress updates from background
@@ -107,7 +110,13 @@ document.getElementById('addDonsBtn').addEventListener('click', async () => {
     .split(',')
     .map(d => d.trim())
     .filter(d => d && !isNaN(d))
-    .map(d => parseFloat(d));
+    .map(d => parseInt(d));
+
+  // Get don ponctuel favori
+  const donPonctuelFavoriInput = document.getElementById('donPonctuelFavori').value;
+  const donPonctuelFavori = donPonctuelFavoriInput && !isNaN(donPonctuelFavoriInput)
+    ? parseInt(donPonctuelFavoriInput)
+    : null;
 
   if (donsPonctuels.length === 0) {
     showStatus('Please enter valid donation amounts', 'error');
@@ -120,7 +129,10 @@ document.getElementById('addDonsBtn').addEventListener('click', async () => {
   }
 
   // Save dons ponctuels for next time
-  await chrome.storage.local.set({ donsPonctuels: donsPonctuelsInput });
+  await chrome.storage.local.set({
+    donsPonctuels: donsPonctuelsInput,
+    donPonctuelFavori: donPonctuelFavoriInput
+  });
 
   // Disable button during processing
   document.getElementById('addDonsBtn').disabled = true;
@@ -139,6 +151,7 @@ document.getElementById('addDonsBtn').addEventListener('click', async () => {
       data: {
         campaigns: selectedCampaigns,
         donsPonctuels: donsPonctuels,
+        donPonctuelFavori: donPonctuelFavori,
         tabId: currentTab.id
       }
     });

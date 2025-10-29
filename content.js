@@ -10,7 +10,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   if (request.action === 'addDonsPonctuels') {
-    addDonsPonctuels(request.data.donsPonctuels)
+    addDonsPonctuels(request.data.donsPonctuels, request.data.donPonctuelFavori)
       .then(() => sendResponse({ success: true }))
       .catch(error => sendResponse({ success: false, error: error.message }));
     return true; // Keep channel open for async response
@@ -46,8 +46,9 @@ async function getCampaigns() {
 }
 
 // Add dons ponctuels to a campaign
-async function addDonsPonctuels(donsPonctuels) {
+async function addDonsPonctuels(donsPonctuels, donPonctuelFavori = null) {
   console.log('Starting to add dons ponctuels:', donsPonctuels);
+  console.log('Don ponctuel favori:', donPonctuelFavori);
 
   try {
     // Step 1: Click on pathway item 2
@@ -102,6 +103,24 @@ async function addDonsPonctuels(donsPonctuels) {
         // 3.d: Input the amount (simulate keyboard input)
         const priceInput = await waitForElement('input[data-testid="input-tier-price"]', 5000);
         await simulateKeyboardInput(priceInput, amount.toString());
+
+        // 3.d.1: Ensure tax receipt checkbox is checked
+        const taxReceiptCheckbox = await waitForElement('input[name="pricemodal_is_eligible_tax_receipt"]', 5000);
+        if (!taxReceiptCheckbox.checked) {
+          taxReceiptCheckbox.click();
+        }
+
+        // 3.d.2: Handle trending donation checkbox based on donPonctuelFavori
+        const trendingCheckbox = await waitForElement('input[name="pricemodal_is_trending_donation"]', 5000);
+        const shouldBeFavorite = donPonctuelFavori !== null && donPonctuelFavori === amount;
+
+        if (shouldBeFavorite && !trendingCheckbox.checked) {
+          console.log(`Marking ${amount} as trending donation (favori)`);
+          trendingCheckbox.click();
+        } else if (!shouldBeFavorite && trendingCheckbox.checked) {
+          console.log(`Unmarking ${amount} as trending donation`);
+          trendingCheckbox.click();
+        }
 
         // 3.e: Click confirm button in modal footer
         const confirmBtn = await waitForElement('button[data-testid="button-submit-old-tier"]', 5000);
@@ -164,6 +183,8 @@ async function addDonsPonctuels(donsPonctuels) {
     console.log('Step 11: Filling color input');
     const colorInput = await waitForElement('input[name="color"]', 5000);
     await simulateKeyboardInput(colorInput, 'a65d58');
+
+    await sleep(500); 
 
     // Step 12: Click next step button
     console.log('Step 12: Clicking next step button');

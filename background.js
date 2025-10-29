@@ -29,7 +29,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   if (request.action === 'startCampaignProcessing') {
     // Start processing campaigns in background
-    processCampaigns(request.data.campaigns, request.data.donsPonctuels, request.data.tabId)
+    processCampaigns(request.data.campaigns, request.data.donsPonctuels, request.data.donPonctuelFavori, request.data.tabId)
       .then(() => sendResponse({ success: true }))
       .catch(error => sendResponse({ success: false, error: error.message }));
     return true; // Keep channel open for async response
@@ -40,8 +40,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 // Process campaigns one by one
-async function processCampaigns(campaigns, donsPonctuels, tabId) {
+async function processCampaigns(campaigns, donsPonctuels, donPonctuelFavori, tabId) {
   console.log('Starting campaign processing:', campaigns.length, 'campaigns');
+  console.log('Don ponctuel favori:', donPonctuelFavori);
 
   // Send initial progress
   sendProgressUpdate({
@@ -84,6 +85,7 @@ async function processCampaigns(campaigns, donsPonctuels, tabId) {
             action: 'addDonsPonctuels',
             data: {
               donsPonctuels: donsPonctuels,
+              donPonctuelFavori: donPonctuelFavori,
               campaignIndex: i,
               totalCampaigns: campaigns.length
             }

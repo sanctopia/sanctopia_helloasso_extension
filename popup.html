@@ -11,13 +11,13 @@
     <h1>HelloAsso Form Automator</h1>
 
     <div id="wrongPage" class="warning-box" style="display: none;">
-      Please navigate to the campaigns list page (path should contain /formulaires)
+      <p>Veuillez naviguer d'abord vers le panneau d'administration HelloAsso.</p>
     </div>
 
     <div id="mainContent" style="display: none;">
       <div class="form-section">
-        <h2>Campaigns</h2>
-        <button id="loadCampaignsBtn" class="secondary-btn">Load Campaigns</button>
+        <h2>Campagnes de don</h2>
+        <button id="loadCampaignsBtn" class="secondary-btn">Charger les campagnes</button>
 
         <div id="campaignsList" class="campaigns-list"></div>
       </div>
@@ -25,14 +25,23 @@
       <div class="form-section">
         <h2>Dons Ponctuels</h2>
         <div class="input-group">
-          <label for="donsPonctuels">Amounts (comma-separated):</label>
-          <input type="text" id="donsPonctuels" placeholder="e.g., 10, 20, 50, 100">
-          <small>Enter donation amounts separated by commas</small>
+          <label for="donsPonctuels">Montants (séparés par des virgules):</label>
+          <input type="text" id="donsPonctuels" placeholder="ex: 10, 20, 50, 100" value="20,50,100,150">
+          <small>Entrez les montants des dons séparés par des virgules</small>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>Don Ponctuel Favori</h2>
+        <div class="input-group">
+          <label for="donPonctuelFavori">Montant:</label>
+          <input type="number" id="donPonctuelFavori" placeholder="ex: 50" value="50">
+          <small>Entrez le montant du don ponctuel favori</small>
         </div>
       </div>
 
       <div class="button-group">
-        <button id="addDonsBtn" class="primary-btn" disabled>Ajouter dons ponctuels</button>
+        <button id="addDonsBtn" class="primary-btn" disabled>Ajouter les dons ponctuels</button>
       </div>
 
       <div id="progress" class="progress-section" style="display: none;">
